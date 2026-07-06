@@ -4,6 +4,7 @@ import logoPerfil from '/public/logo.jpg';
 import logoMamaRoma from '/public/logoMAMAROMO.jpg';
 import logoAceite from '/public/logoACEITE.jpg';
 import logoHNT from '/public/logoHNT.jpg';
+import logoBents from '/public/logoBENTS.jpg';
 import logoDefault from '/public/logo.jpg';
 
 
@@ -42,6 +43,56 @@ const TABELA_PRECOS = {
   "Vila Alpina": 15.00, "Vila Ideal": 15.00, "Vila Olavo Costa": 15.00, "Vila Ozanan": 15.00,
   "Vina Del Mar": 22.00, "Vitorino Braga": 14.00, "Vivendas da Serra": 20.00
 };
+const TABELA_ZONA_NORTE = {
+  "Adolfo Vireque": 17.00, "Grajaú": 13.00, "Sagrado C Jesus": 20.00, // [cite: 1]
+  "Aeroporto": 19.00, "Grambery": 13.00, "Salvaterra": 18.00, // [cite: 1]
+  "Alto dos Passos": 14.00, "Graminha": 18.00, "Santa Cândida": 15.00, // [cite: 1]
+  "Alto dos Pinheiros": 17.00, "Granville": 17.00, "Santa Catarina": 11.00, // [cite: 1]
+  "Aracy": 15.00, "Guaruá": 15.00, "Santa Cecília": 14.00, // [cite: 1]
+  "Arco Iris": 20.00, "Ipiranga": 15.00, "Santa Luzia": 17.00, // [cite: 1]
+  "Bairu": 12.00, "Guadalajara": 18.00, "Santa Efigênia": 20.00, // [cite: 1]
+  "Bandeirantes": 13.00, "Industrial": 10.00, "Santa Paula": 15.00, // [cite: 1]
+  "Bela Aurora": 20.00, "Itatiaia": 17.00, "Santa Rita": 14.00, // [cite: 1]
+  "Boa Vista": 15.00, "Jardim de Alá": 18.00, "Santa Helena": 13.00, // [cite: 1]
+  "Bom Clima": 12.00, "Jardim América": 18.00, "Santa Teresa": 15.00, // [cite: 1]
+  "Bom Jardim": 15.00, "Jardim Casa Blanca": 17.00, "Santa Terezinha": 9.00, // [cite: 1]
+  "Bom Passtor": 15.00, "Jardim Laranjeiras": 15.00, "Santo Antônio": 20.00, // [cite: 1]
+  "Bonfim": 14.00, "Jardim da Serra": 22.00, "Santos Anjos": 13.00, // [cite: 1]
+  "Borboleta": 15.00, "Jardim Imperador": 17.00, "Santos Dumont": 18.00, // [cite: 1]
+  "Borborema": 15.00, "Jardins Imperiais": 17.00, "São Benedito": 15.00, // [cite: 1]
+  "Bosque do Imperador": 20.00, "Jardim do Sol": 16.00, "São Bernardo": 15.00, // [cite: 1]
+  "Bosque dos Pinheiros": 16.00, "Jardim Gaúcho": 16.00, "São Clemente": 15.00, // [cite: 1]
+  "Bosque Imperial": 17.00, "Jardim Glória": 11.00, "São Dimas": 9.00, // [cite: 1]
+  "Caiçaras": 20.00, "Jk": 15.00, "São Sebastião": 15.00, // [cite: 1]
+  "Carlos Chagas": 10.00, "Linhares": 22.00, "São Geraldo": 20.00, // [cite: 1]
+  "Cascatinha": 15.00, "Lourdes": 16.00, "São Mateus": 15.00, // [cite: 1]
+  "Centenário": 12.00, "Manoel Honório": 11.00, "São Pedro": 17.00, // [cite: 1]
+  "Centro": 12.00, "Ladeira": 11.00, "Solidariedade": 15.00, // [cite: 1]
+  "Cerâmica": 9.00, "Mariano Procópio": 9.00, "Spina Ville": 20.00, // [cite: 1]
+  "Cerro Azul": 16.00, "Marilândia": 19.00, "Teixeiras": 17.00, // [cite: 1]
+  "Cesário Alvim": 15.00, "Martelos": 17.00, "Tiguera": 15.00, // [cite: 1]
+  "Chales do Imperador": 17.00, "Marumbi": 13.00, "UFJF": 15.00, // [cite: 1]
+  "Chales dos Algares": 17.00, "Monte Castelo": 13.00, "Tupã": 16.00, // [cite: 1]
+  "Cidade Jardim": 15.00, "Morro do Imperador": 17.00, "Vale da Serra": 25.00, // [cite: 1]
+  "Cidade Nova": 17.00, "Mundo Novo": 14.00, "Vale do Ipê": 11.00, // [cite: 1]
+  "Colinas do Imperador": 20.00, "N. Sra. Aparecida": 13.00, "Vale Verde": 20.00, // [cite: 1]
+  "Cond. Jardim da Serra": 22.00, "N. Sra. das Graças": 13.00, "Vila Alpina": 15.00, // [cite: 1]
+  "Costa Carvalho": 13.00, "N. Sra. de Fátima": 17.00, "Vila Ideal": 15.00, // [cite: 1]
+  "Cruzeiro do Sul": 15.00, "Nova Califórnia": 22.00, "Vila Olavo Costa": 15.00, // [cite: 1]
+  "Democrata": 9.00, "Novo Horizonte": 20.00, "Vila Ozanan": 15.00, // [cite: 1]
+  "Dom Orione": 17.00, "Paineiras": 13.00, "Vitorino Braga": 14.00, // [cite: 1]
+  "Eldorado": 12.00, "Parque Imperial": 17.00, "Vivendas da Serra": 15.00, // [cite: 1]
+  "Dom Bosco": 14.00, "Parque Burnier": 16.00, "Vina Del Mar": 22.00, // [cite: 1]
+  "Esplanada": 12.00, "Pq. Da Lajinha": 20.00, "Dom Juan": 17.00, // [cite: 1]
+  "Estrela Sul": 15.00, "Poço Rico": 13.00, "São Tarcisio": 15.00, // [cite: 1]
+  "Fazendinha Ipiranga": 25.00, "Previdenciários": 20.00, "Nova era": 25.00, // [cite: 1]
+  "Fábrica": 10.00, "Progresso": 15.00, "Cidade do Sol": 20.00, // [cite: 1]
+  "Furtado Menezes": 15.00, "Quintas Avenida": 12.00, "Barbosa Lage": 15.00, // [cite: 1]
+  "Recanto da Mata": 20.00, "Distrito Industrial": 32.00, "Parque Independ.": 30.00, // [cite: 1]
+  "Santa Cruz": 25.00, "Barreira": 35.00, "Granjas Betânia": 17.00, // [cite: 1]
+  "Benfica": 28.00, "Náutico": 50.00, "Recanto dos Lagos": 20.00, // [cite: 2]
+  "Nova Benfica": 30.00, "Grama": 30.00, "BR": 1.20 // [cite: 2]
+};
 
 const DIAS_DA_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
@@ -67,9 +118,23 @@ function App() {
   const [dadosTemporarios, setDadosTemporarios] = useState([]);
   const [errosCampos, setErrosCampos] = useState({});
   const [avisoErroGeral, setAvisoErroGeral] = useState('');
-  const empresaFinal = empresaSelecionada === 'Outra' ? (empresaManual || 'Outra Empresa') : empresaSelecionada;
+
+  // Novas states para as novas regras de negocio
+  const [unidadeAceite, setUnidadeAceite] = useState('São Mateus');
+  const [empresaCorridaZonaNorte, setEmpresaCorridaZonaNorte] = useState('Aceite');
+  const [qtdDiretoHNT, setQtdDiretoHNT] = useState('');
+  const [valorDiretoHNT, setValorDiretoHNT] = useState('');
+
+  const getTabelaAtiva = () => {
+    const esZonaNorte = (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte') || empresaSelecionada === 'HNT';
+    return esZonaNorte ? TABELA_ZONA_NORTE : TABELA_PRECOS;
+  };
+  const empresaFinal = empresaSelecionada === 'Outra' 
+    ? (empresaManual || 'Outra Empresa') 
+    : (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' ? 'Aceite + HNT (ZN)' : empresaSelecionada);
+
   const nomeEmpresaLimpo = empresaFinal ? empresaFinal.trim().toLowerCase() : '';
-  const usaTabelaAutomatica = nomeEmpresaLimpo === 'aceite' || nomeEmpresaLimpo === 'hnt' || empresaSelecionada === 'Outra';
+  const usaTabelaAutomatica = nomeEmpresaLimpo === 'aceite' || nomeEmpresaLimpo === 'hnt' || nomeEmpresaLimpo === 'aceite + hnt (zn)' || empresaSelecionada === 'Outra';
 
   useEffect(() => {
     try {
@@ -151,26 +216,30 @@ function App() {
     setMostrarModalZerar(false);
   };
 
-  const obterIndicadorWhatsApp = (nomeEmpresa) => {
+  const obtenerIndicadorWhatsApp = (nomeEmpresa) => {
     if (!nomeEmpresa) return '🏢 *EMPRESA*';
     const emp = nomeEmpresa.trim().toLowerCase();
     if (emp === 'mama roma') return `🍝 *MAMA ROMA*`;
     if (emp === 'aceite') return `🥗 *ACEITE*`;
     if (emp === 'hnt') return `🍗 *HNT*`;
+    if (emp === 'bents') return `🍔 *BENTS*`;
+    if (emp.includes('aceite + hnt')) return `🥗🍗 *ACEITE + HNT (ZN)*`;
     return `🏢 *${nomeEmpresa.toUpperCase()}*`;
   };
 
   const obterPrecoBairro = (bairro) => {
-    let precoBase = TABELA_PRECOS[bairro] || 0;
+    // usa a tabela atualmente ativa (Zona Norte ou tabela padrão)
+    const tabela = getTabelaAtiva();
+    let precoBase = tabela[bairro] || 0;
     if (nomeEmpresaLimpo === 'hnt' && bairro === 'São Mateus') {
       return precoBase + 1.00; 
     }
     return precoBase;
   };
 
-  const sugeridos = buscaBairro.trim() === '' 
-    ? [] 
-    : Object.keys(TABELA_PRECOS).filter(b => 
+  const sugeridos = buscaBairro.trim() === ''
+    ? []
+    : Object.keys(getTabelaAtiva()).filter(b =>
         b.toLowerCase().includes(buscaBairro.toLowerCase())
       ).slice(0, 5);
 
@@ -191,10 +260,36 @@ function App() {
       return;
     }
     setErrosCampos(prev => ({ ...prev, valorEntrega: false, listaEntregasDia: false }));
-    setListaEntregasDia([...listaEntregasDia, parseFloat(valorEntrega)]);
+    
+    // Identifica qual a empresa correta para vincular a corrida na Zona Norte
+    const empresaVinculo = (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte') 
+      ? empresaCorridaZonaNorte 
+      : empresaFinal;
+
+    setListaEntregasDia([...listaEntregasDia, { valor: parseFloat(valorEntrega), empresa: empresaVinculo }]);
     setValorEntrega('');
     setBairroSelecionado('');
   };
+  function calcularValorUnidade(unidade, bairro, deveTirarTaxa, taxaEmpresa) {
+    let valorBase = 0;
+    if (unidade && unidade.trim().toLowerCase() === "jardim norte") {
+      const precoBairro = TABELA_ZONA_NORTE[bairro];
+      if (precoBairro !== undefined) {
+        valorBase = precoBairro;
+      }
+      if (deveTirarTaxa) {
+        valorBase -= taxaEmpresa;
+      }
+      return Math.max(0, valorBase);
+    } else {
+        const tabela = getTabelaAtiva();
+        return tabela[bairro] || 0;
+    }
+  }
+
+  
+const esZonaNorte = (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte') || empresaSelecionada === 'HNT';
+const tabelaAtiva = esZonaNorte ? TABELA_ZONA_NORTE : TABELA_PRECOS;
 
   const salvarDiaNaSemana = () => {
     let novosErros = {};
@@ -207,14 +302,34 @@ function App() {
 
     let brutoDia = 0;
     let qtdEntregas = 0;
+    let descontoFinal = 0;
+    let liquidoDia = 0;
+    let garantidoAplicado = false;
 
-    if (modoDireto) {
-      if (!qtdDireto || isNaN(qtdDireto) || parseFloat(qtdDireto) <= 0) novosErros.qtdDireto = true;
-      if (!valorDireto || isNaN(valorDireto) || parseFloat(valorDireto) <= 0) novosErros.valorDireto = true;
+    // Validacao customizada de campos baseado nas novas empresas
+    if (empresaSelecionada === 'Bents') {
+      if (!qtdDireto || isNaN(qtdDireto) || parseFloat(qtdDireto) < 0) novosErros.qtdDireto = true;
+    } else if (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte') {
+      if (modoDireto) {
+        if (!qtdDireto || isNaN(qtdDireto) || parseFloat(qtdDireto) < 0) novosErros.qtdDireto = true;
+        if (!valorDireto || isNaN(valorDireto) || parseFloat(valorDireto) < 0) novosErros.valorDireto = true;
+        if (!qtdDiretoHNT || isNaN(qtdDiretoHNT) || parseFloat(qtdDiretoHNT) < 0) novosErros.qtdDiretoHNT = true;
+        if (!valorDiretoHNT || isNaN(valorDiretoHNT) || parseFloat(valorDiretoHNT) < 0) novosErros.valorDiretoHNT = true;
+      } else {
+        if (listaEntregasDia.length === 0) {
+          novosErros.listaEntregasDia = true;
+          if (valorEntrega) novosErros.lembreteBotao = true; 
+        }
+      }
     } else {
-      if (listaEntregasDia.length === 0) {
-        novosErros.listaEntregasDia = true;
-        if (valorEntrega) novosErros.lembreteBotao = true; 
+      if (modoDireto) {
+        if (!qtdDireto || isNaN(qtdDireto) || parseFloat(qtdDireto) <= 0) novosErros.qtdDireto = true;
+        if (!valorDireto || isNaN(valorDireto) || parseFloat(valorDireto) <= 0) novosErros.valorDireto = true;
+      } else {
+        if (listaEntregasDia.length === 0) {
+          novosErros.listaEntregasDia = true;
+          if (valorEntrega) novosErros.lembreteBotao = true; 
+        }
       }
     }
 
@@ -231,25 +346,82 @@ function App() {
     setErrosCampos({});
     setAvisoErroGeral('');
 
-    if (modoDireto) {
+    // Regra de calculo customizado para a BENTS
+    if (empresaSelecionada === 'Bents') {
       qtdEntregas = parseInt(qtdDireto) || 0;
-      brutoDia = parseFloat(valorDireto) || 0;
-    } else {
-      qtdEntregas = listaEntregasDia.length;
-      brutoDia = listaEntregasDia.reduce((total, valor) => total + valor, 0);
-    }
-
-    const descontoPadrao = brutoDia * (porcentagem / 100);
-    let liquidoDia = brutoDia - descontoPadrao;
-    let descontoFinal = descontoPadrao;
-    let garantidoAplicado = false;
-
-    if (nomeEmpresaLimpo === 'mama roma') {
-      const ehAlmocoMeioSemana = ['Seg', 'Ter', 'Qua', 'Qui'].includes(diaSemana) && turno === 'Dia';
-      if (!ehAlmocoMeioSemana && liquidoDia < 80.00) {
-        liquidoDia = 80.00;
+      brutoDia = 60.00 + (qtdEntregas * 8.00);
+      const descontoPadrao = brutoDia * (porcentagem / 100);
+      liquidoDia = brutoDia - descontoPadrao;
+      
+      const ehFimDeSemana = ['Sáb', 'Dom'].includes(diaSemana);
+      const minimoGarantido = ehFimDeSemana ? 100.00 : 80.00;
+      
+      if (liquidoDia < minimoGarantido) {
+        liquidoDia = minimoGarantido;
         garantidoAplicado = true;
-        descontoFinal = Math.max(0, brutoDia - 80.00);
+        descontoFinal = Math.max(0, brutoDia - minimoGarantido);
+      } else {
+        descontoFinal = descontoPadrao;
+      }
+    } 
+    // Regra de calculo customizado para a ACEITE ZONA NORTE (Aceite + HNT)
+    else if (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte') {
+      let brutoAceite = 0;
+      let qtdAceite = 0;
+      let brutoHNT = 0;
+      let qtdHNT = 0;
+
+      if (modoDireto) {
+        qtdAceite = parseInt(qtdDireto) || 0;
+        brutoAceite = parseFloat(valorDireto) || 0;
+        qtdHNT = parseInt(qtdDiretoHNT) || 0;
+        brutoHNT = parseFloat(valorDiretoHNT) || 0;
+      } else {
+        qtdAceite = listaEntregasDia.filter(i => i.empresa === 'Aceite').length;
+        brutoAceite = listaEntregasDia.filter(i => i.empresa === 'Aceite').reduce((a, b) => a + b.valor, 0);
+        qtdHNT = listaEntregasDia.filter(i => i.empresa === 'HNT').length;
+        brutoHNT = listaEntregasDia.filter(i => i.empresa === 'HNT').reduce((a, b) => a + b.valor, 0);
+      }
+
+      // Calcula garantidos separados de R$ 45 cada
+      let liqAceite = brutoAceite - (brutoAceite * (porcentagem / 100));
+      if (liqAceite < 45.00) {
+        liqAceite = 45.00;
+        garantidoAplicado = true;
+      }
+
+      let liqHNT = brutoHNT - (brutoHNT * (porcentagem / 100));
+      if (liqHNT < 45.00) {
+        liqHNT = 45.00;
+        garantidoAplicado = true;
+      }
+
+      brutoDia = brutoAceite + brutoHNT;
+      qtdEntregas = qtdAceite + qtdHNT;
+      liquidoDia = liqAceite + liqHNT;
+      descontoFinal = brutoDia - liquidoDia;
+    } 
+    // Regras originais das demais empresas
+    else {
+      if (modoDireto) {
+        qtdEntregas = parseInt(qtdDireto) || 0;
+        brutoDia = parseFloat(valorDireto) || 0;
+      } else {
+        qtdEntregas = listaEntregasDia.length;
+        brutoDia = listaEntregasDia.reduce((total, item) => total + item.valor, 0);
+      }
+
+      const descontoPadrao = brutoDia * (porcentagem / 100);
+      liquidoDia = brutoDia - descontoPadrao;
+      descontoFinal = descontoPadrao;
+
+      if (nomeEmpresaLimpo === 'mama roma') {
+        const ehAlmocoMeioSemana = ['Seg', 'Ter', 'Qua', 'Qui'].includes(diaSemana) && turno === 'Dia';
+        if (!ehAlmocoMeioSemana && liquidoDia < 80.00) {
+          liquidoDia = 80.00;
+          garantidoAplicado = true;
+          descontoFinal = Math.max(0, brutoDia - 80.00);
+        }
       }
     }
 
@@ -268,6 +440,7 @@ function App() {
 
     setSemana([...semana, novoDia]);
     
+    // Reseta todos os campos para o padrão original
     setEmpresaSelecionada('');
     setEmpresaManual('');
     setDiaSemana('');
@@ -275,7 +448,10 @@ function App() {
     setListaEntregasDia([]);
     setQtdDireto('');
     setValorDireto('');
+    setQtdDiretoHNT('');
+    setValorDiretoHNT('');
     setModoDireto(false);
+    setUnidadeAceite('São Mateus');
   };
 
   const totalDescontoSemana = semana.reduce((acc, dia) => acc + (Number(dia.desconto) || 0), 0);
@@ -305,7 +481,24 @@ function App() {
   };
 
   const enviarWhatsApp = () => {
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(gerarTextoRelatorio())}`, '_blank');
+    try {
+      const texto = encodeURIComponent(gerarTextoRelatorio());
+      const isMobile = /Mobi|Android/i.test(navigator.userAgent || '');
+      const base = isMobile ? 'https://api.whatsapp.com/send' : 'https://web.whatsapp.com/send';
+      const url = `${base}?text=${texto}`;
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        // popup bloqueado — navegar na mesma aba como fallback
+        window.location.href = url;
+      }
+    } catch (e) {
+      console.error('Erro ao abrir WhatsApp:', e);
+      try {
+        window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(gerarTextoRelatorio())}`;
+      } catch (err) {
+        console.error('Fallback também falhou:', err);
+      }
+    }
   };
 
   const enviarEmail = () => {
@@ -396,7 +589,7 @@ function App() {
         }}>
           <div style={{
             backgroundColor: '#202024', borderRadius: '12px', padding: '25px',
-            maxWidth: '#420px', width: '100%', border: '2px solid #ff9000',
+            maxWidth: '420px', width: '100%', border: '2px solid #ff9000',
             textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', color: '#fff'
           }}>
             <h3 style={{ color: '#ff9000', marginTop: 0 }}>⚠️ Apagar Tudo?</h3>
@@ -452,15 +645,36 @@ function App() {
             <img src={logoAceite} alt="Aceite" className="company-logo-img" />
             <span>Aceite</span>
           </button>
-          <button type="button" className={`company-card ${empresaSelecionada === 'HNT' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('HNT'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
+          <button type="button" className={`company-card ${(empresaSelecionada === 'HNT' || (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte')) ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('HNT'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
             <img src={logoHNT} alt="HNT" className="company-logo-img" />
             <span>HNT</span>
+          </button>
+          <button type="button" className={`company-card ${empresaSelecionada === 'Bents' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Bents'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); setModoDireto(true); }}>
+            <img src={logoBents} alt="Bents" className="company-logo-img" />
+            <span>Bents</span>
           </button>
           <button type="button" className={`company-card ${empresaSelecionada === 'Outra' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Outra'); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
             <img src={logoDefault} alt="Outra Empresa" className="company-logo-img" />
             <span>{empresaManual || 'Outra'}</span>
           </button>
         </div>
+
+        {/* Categoria adicional/sobreposição para a empresa Aceite */}
+        {empresaSelecionada === 'Aceite' && (
+          <div style={{ marginTop: '12px', marginBottom: '15px', backgroundColor: 'rgba(255,144,0,0.05)', padding: '12px', borderRadius: '8px', border: '1px dashed #ff9000' }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px', color: '#ff9000' }}>📍 Unidade / Região de Atuação:</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <label className={`shift-chip ${unidadeAceite === 'São Mateus' ? 'selected' : ''}`} style={{ flex: 1, textAlign: 'center', cursor: 'pointer', padding: '10px' }}>
+                <input type="radio" name="unidadeAceite" value="São Mateus" checked={unidadeAceite === 'São Mateus'} onChange={(e) => setUnidadeAceite(e.target.value)} style={{ display: 'none' }} />
+                São Mateus
+              </label>
+              <label className={`shift-chip ${unidadeAceite === 'Zona Norte' ? 'selected' : ''}`} style={{ flex: 1, textAlign: 'center', cursor: 'pointer', padding: '10px' }}>
+                <input type="radio" name="unidadeAceite" value="Zona Norte" checked={unidadeAceite === 'Zona Norte'} onChange={(e) => setUnidadeAceite(e.target.value)} style={{ display: 'none' }} />
+                Zona Norte (Aceite + HNT)
+              </label>
+            </div>
+          </div>
+        )}
 
         {empresaSelecionada === 'Outra' && (
           <input 
@@ -504,7 +718,8 @@ function App() {
           <label className="radio-label"><input type="radio" name="porcentagem" checked={porcentagem === 20} onChange={() => setPorcentagem(20)} /> 20%</label>
         </div>
 
-        {empresaSelecionada && (
+        {/* Esconde as abas de modo se for Bents (ja que so aceita quantidade direta) */}
+        {empresaSelecionada && empresaSelecionada !== 'Bents' && (
           <div className="toggle-mode-container">
             <button type="button" className={`toggle-tab ${!modoDireto ? 'active' : ''}`} onClick={() => setModoDireto(false)}>
               Por Corrida
@@ -515,7 +730,40 @@ function App() {
           </div>
         )}
 
-        {empresaSelecionada && (modoDireto ? (
+        {/* Renderizacao dos boxes de entrega de acordo com a empresa selecionada */}
+        {empresaSelecionada === 'Bents' ? (
+          <div className="delivery-box border-orange" style={{ border: errosCampos?.qtdDireto ? '2px solid #f75a68' : '' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#ff9000' }}>Fechamento Bents</h4>
+            <label>Quantidade de Entregas Realizadas:</label>
+            <input 
+              type="number" 
+              placeholder="Ex: 10" 
+              value={qtdDireto} 
+              onChange={(e) => { setQtdDireto(e.target.value); setErrosCampos(p => ({...p, qtdDireto: false})); }} 
+              className="input-field" 
+              style={{ borderColor: errosCampos?.qtdDireto ? '#f75a68' : '' }}
+            />
+            <div className="info-text">
+              <b>Fixo Diário:</b> R$ 60.00 | <b>Valor por Corrida:</b> R$ 8.00
+            </div>
+          </div>
+        ) : empresaSelecionada && (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && modoDireto) ? (
+          <div className="delivery-box border-orange" style={{ border: (errosCampos?.qtdDireto || errosCampos?.valorDireto || errosCampos?.qtdDiretoHNT || errosCampos?.valorDiretoHNT) ? '2px solid #f75a68' : '' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#ff9000' }}>Fechamento Combinado Zona Norte (Direto)</h4>
+            
+            <h5 style={{ color: '#00b37e', margin: '5px 0', fontSize: '14px' }}>🥗 ACEITE</h5>
+            <label>Qtd Entregas Aceite:</label>
+            <input type="number" placeholder="Ex: 5" value={qtdDireto} onChange={(e) => { setQtdDireto(e.target.value); setErrosCampos(p => ({...p, qtdDireto: false})); }} className="input-field" style={{ borderColor: errosCampos?.qtdDireto ? '#f75a68' : '', marginBottom: '8px' }} />
+            <label>Valor Bruto Aceite (R$):</label>
+            <input type="number" placeholder="Ex: 75.00" value={valorDireto} onChange={(e) => { setValorDireto(e.target.value); setErrosCampos(p => ({...p, valorDireto: false})); }} className="input-field" style={{ borderColor: errosCampos?.valorDireto ? '#f75a68' : '', marginBottom: '12px' }} />
+            
+            <h5 style={{ color: '#ff9000', margin: '10px 0 5px 0', fontSize: '14px' }}>🍗 HNT</h5>
+            <label>Qtd Entregas HNT:</label>
+            <input type="number" placeholder="Ex: 4" value={qtdDiretoHNT} onChange={(e) => { setQtdDiretoHNT(e.target.value); setErrosCampos(p => ({...p, qtdDiretoHNT: false})); }} className="input-field" style={{ borderColor: errosCampos?.qtdDiretoHNT ? '#f75a68' : '', marginBottom: '8px' }} />
+            <label>Valor Bruto HNT (R$):</label>
+            <input type="number" placeholder="Ex: 60.00" value={valorDiretoHNT} onChange={(e) => { setValorDiretoHNT(e.target.value); setErrosCampos(p => ({...p, valorDiretoHNT: false})); }} className="input-field" style={{ borderColor: errosCampos?.valorDiretoHNT ? '#f75a68' : '' }} />
+          </div>
+        ) : empresaSelecionada && modoDireto ? (
           <div className="delivery-box border-orange" style={{ border: (errosCampos?.qtdDireto || errosCampos?.valorDireto) ? '2px solid #f75a68' : '' }}>
             <h4 style={{ margin: '0 0 10px 0', color: '#ff9000' }}>Fechamento Total Direto</h4>
             <label>Quantidade de Entregas Realizadas:</label>
@@ -558,10 +806,27 @@ function App() {
 
                 <select value={bairroSelecionado} onChange={(e) => aplicarPrecoTabela(e.target.value)} className="input-field" style={{ marginTop: '10px' }}>
                   <option value="">-- Ou escolha na lista suspensa --</option>
-                  {Object.keys(TABELA_PRECOS).map((b) => (
+                  {Object.keys(getTabelaAtiva()).map((b) => (
                     <option key={b} value={b}>{b} (R$ {obterPrecoBairro(b).toFixed(2)})</option>
                   ))}
                 </select>
+              </div>
+            )}
+
+            {/* Alternador de vinculo de corrida se estiver na Zona Norte */}
+            {empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && (
+              <div style={{ marginBottom: '15px', paddingBottom: '12px', borderBottom: '1px dashed #29292e' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>Vincular esta corrida para:</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <label className={`shift-chip ${empresaCorridaZonaNorte === 'Aceite' ? 'selected' : ''}`} style={{ flex: 1, textAlign: 'center', padding: '8px', cursor: 'pointer' }}>
+                    <input type="radio" name="empresaCorridaZN" checked={empresaCorridaZonaNorte === 'Aceite'} onChange={() => setEmpresaCorridaZonaNorte('Aceite')} style={{ display: 'none' }} />
+                    🥗 Aceite
+                  </label>
+                  <label className={`shift-chip ${empresaCorridaZonaNorte === 'HNT' ? 'selected' : ''}`} style={{ flex: 1, textAlign: 'center', padding: '8px', cursor: 'pointer' }}>
+                    <input type="radio" name="empresaCorridaZN" checked={empresaCorridaZonaNorte === 'HNT'} onChange={() => setEmpresaCorridaZonaNorte('HNT')} style={{ display: 'none' }} />
+                    🍗 HNT
+                  </label>
+                </div>
               </div>
             )}
 
@@ -582,10 +847,19 @@ function App() {
             </button>
 
             <div className="info-text">
-              <b>Hoje:</b> {listaEntregasDia.length} entregas | <b>Bruto:</b> R$ {listaEntregasDia.reduce((a,b)=>a+b, 0).toFixed(2)}
+              {empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' ? (
+                <>
+                  <b>Aceite:</b> {listaEntregasDia.filter(i => i.empresa === 'Aceite').length} ent. (R$ {listaEntregasDia.filter(i => i.empresa === 'Aceite').reduce((a,b)=>a+b.valor,0).toFixed(2)}) | 
+                  <b> HNT:</b> {listaEntregasDia.filter(i => i.empresa === 'HNT').length} ent. (R$ {listaEntregasDia.filter(i => i.empresa === 'HNT').reduce((a,b)=>a+b.valor,0).toFixed(2)})
+                </>
+              ) : (
+                <>
+                  <b>Hoje:</b> {listaEntregasDia.length} entregas | <b>Bruto:</b> R$ {listaEntregasDia.reduce((a,b)=>a+b.valor, 0).toFixed(2)}
+                </>
+              )}
             </div>
           </div>
-        ))}
+        )}
 
         {avisoErroGeral && (
           <div style={{ 
@@ -630,7 +904,7 @@ function App() {
               </div>
               {dia?.garantido && (
                 <p style={{ color: '#ff9000', margin: '3px 0 0 0', fontSize: '12px', fontWeight: 'bold' }}>
-                  * Valor garantido de R$ 80,00 aplicado (Desconto: R$ {(dia?.desconto || 0).toFixed(2)}).
+                  * Valor mínimo garantido aplicado para este período/empresa.
                 </p>
               )}
             </div>
