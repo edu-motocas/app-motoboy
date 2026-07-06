@@ -434,7 +434,7 @@ function App() {
             empresa: empresaFinal,
             diaSemana,
             turno,
-            textoTurno: turno === 'Dia' ? 'Almoço' : 'Jantar',
+            textoTurno: (turno === 'Dia' ? 'Almoço' : (turno === 'Noite' ? 'Jantar' : (turno === 'Plantao' ? 'Plantão' : ''))),
             qtdEntregas,
             bruto: brutoDia,
             desconto: descontoFinal,
@@ -460,7 +460,7 @@ function App() {
             empresa: empresaFinal,
             diaSemana,
             turno,
-            textoTurno: turno === 'Dia' ? 'Almoço' : 'Jantar',
+            textoTurno: (turno === 'Dia' ? 'Almoço' : (turno === 'Noite' ? 'Jantar' : (turno === 'Plantao' ? 'Plantão' : ''))),
             qtdEntregas,
             bruto: brutoDia,
             desconto: descontoFinal,
@@ -499,7 +499,8 @@ function App() {
     
     semana.forEach((d) => {
       const indicadorEmpresa = obterIndicadorWhatsApp(d.empresa);
-      texto += `📅 *${d.diaSemana} (${d.textoTurno === 'Almoço' ? '☀️ Almoço' : '🌙 Jantar'})* — ${indicadorEmpresa}\n`;
+      const turnoLabel = d.textoTurno === 'Almoço' ? '☀️ Almoço' : (d.textoTurno === 'Jantar' ? '🌙 Jantar' : (d.textoTurno === 'Plantão' ? '🛌 Plantão' : d.textoTurno));
+      texto += `📅 *${d.diaSemana} (${turnoLabel})* — ${indicadorEmpresa}\n`;
       if (d.detalhe && d.detalhe.aceite) {
         texto += `• Aceite: ${d.detalhe.aceite.qtd} corr. — Bruto: R$ ${Number(d.detalhe.aceite.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.aceite.liquido || 0).toFixed(2)} ${d.detalhe.aceite.garantido ? '🔥 (Garantido)' : ''}\n`;
         texto += `• HNT: ${d.detalhe.hnt.qtd} corr. — Bruto: R$ ${Number(d.detalhe.hnt.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.hnt.liquido || 0).toFixed(2)} ${d.detalhe.hnt.garantido ? '🔥 (Garantido)' : ''}\n`;
@@ -681,6 +682,12 @@ function App() {
             <input type="radio" name="turno" value="Noite" checked={turno === 'Noite'} onChange={(e) => setTurno(e.target.value)} />
             🌙 Jantar
           </label>
+          {empresaSelecionada === 'Aceite' && unidadeAceite === 'São Mateus' && (
+            <label className={`shift-chip ${turno === 'Plantao' ? 'selected' : ''}`}>
+              <input type="radio" name="turno" value="Plantao" checked={turno === 'Plantao'} onChange={(e) => setTurno(e.target.value)} />
+              🛌 Plantão
+            </label>
+          )}
         </div>
 
         <label>Taxa de Porcentagem:</label>
@@ -851,7 +858,7 @@ function App() {
               title="Clique para excluir este dia"
             >
               <span className="history-item-title">
-                📅 {dia?.diaSemana || ''} ({dia?.textoTurno === 'Almoço' ? '☀️ Almoço' : '🌙 Jantar'}) — {dia?.empresa || ''}
+                📅 {dia?.diaSemana || ''} ({dia?.textoTurno === 'Almoço' ? '☀️ Almoço' : (dia?.textoTurno === 'Jantar' ? '🌙 Jantar' : (dia?.textoTurno === 'Plantão' ? '🛌 Plantão' : dia?.textoTurno))}) — {dia?.empresa || ''}
               </span>
               <div className="history-row">
                 {dia?.detalhe && dia.detalhe.aceite ? (
