@@ -122,6 +122,7 @@ function App() {
   const [empresaCorridaZonaNorte, setEmpresaCorridaZonaNorte] = useState('Aceite');
   const [qtdDiretoHNT, setQtdDiretoHNT] = useState('');
   const [valorDiretoHNT, setValorDiretoHNT] = useState('');
+  const [tipoAtendimento, setTipoAtendimento] = useState('Turno');
 
   const getTabelaAtiva = () => {
     const estaAceiteZonaNorte = empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte';
@@ -306,6 +307,8 @@ function App() {
     let liqHNT = 0;
     let descontoAceite = 0;
     let descontoHNT = 0;
+    let garantidoAceite = false;
+    let garantidoHNT = false;
 
     if (empresaSelecionada === 'Bents') {
       if (!qtdDireto || isNaN(qtdDireto) || parseFloat(qtdDireto) < 0) novosErros.qtdDireto = true;
@@ -347,21 +350,25 @@ function App() {
     setErrosCampos({});
     setAvisoErroGeral('');
 
+    const minimoGarantidoPorDia = ['Sáb', 'Dom'].includes(diaSemana) ? 50.00 : 45.00;
+    const ehAvulso = tipoAtendimento === 'Avulso';
+
     if (empresaSelecionada === 'Bents') {
       qtdEntregas = parseInt(qtdDireto) || 0;
-      brutoDia = 60.00 + (qtdEntregas * 8.00);
+      brutoDia = ehAvulso ? (qtdEntregas * 8.00) : (60.00 + (qtdEntregas * 8.00));
       const descontoPadrao = brutoDia * (porcentagem / 100);
       liquidoDia = brutoDia - descontoPadrao;
+      descontoFinal = descontoPadrao;
       
-      const ehFimDeSemana = ['Sáb', 'Dom'].includes(diaSemana);
-      const minimoGarantido = ehFimDeSemana ? 100.00 : 80.00;
-      
-      if (liquidoDia < minimoGarantido) {
-        liquidoDia = minimoGarantido;
-        garantidoAplicado = true;
-        descontoFinal = Math.max(0, brutoDia - minimoGarantido);
-      } else {
-        descontoFinal = descontoPadrao;
+      if (!ehAvulso) {
+        const ehFimDeSemana = ['Sáb', 'Dom'].includes(diaSemana);
+        const minimoGarantido = ehFimDeSemana ? 100.00 : 80.00;
+        
+        if (liquidoDia < minimoGarantido) {
+          liquidoDia = minimoGarantido;
+          garantidoAplicado = true;
+          descontoFinal = Math.max(0, brutoDia - minimoGarantido);
+        }
       }
     } 
 
@@ -379,25 +386,38 @@ function App() {
       }
 
       const taxa = porcentagem / 100;
+      const minimoGarantidoPorEmpresa = ['Sáb', 'Dom'].includes(diaSemana) ? 50.00 : 45.00;
+      garantidoAceite = false;
+      garantidoHNT = false;
 
       const afterAceite = brutoAceite * (1 - taxa);
-      if (afterAceite >= 45.00) {
-        liqAceite = afterAceite;
-        descontoAceite = Math.max(0, brutoAceite - liqAceite);
-      } else {
-        liqAceite = 45.00;
-        descontoAceite = Math.max(0, brutoAceite - 45.00);
-        garantidoAplicado = true;
-      }
-
       const afterHNT = brutoHNT * (1 - taxa);
-      if (afterHNT >= 45.00) {
-        liqHNT = afterHNT;
-        descontoHNT = Math.max(0, brutoHNT - liqHNT);
+
+      if (!ehAvulso) {
+        if (afterAceite >= minimoGarantidoPorEmpresa) {
+          liqAceite = afterAceite;
+          descontoAceite = Math.max(0, brutoAceite - liqAceite);
+        } else {
+          liqAceite = minimoGarantidoPorEmpresa;
+          descontoAceite = Math.max(0, brutoAceite - minimoGarantidoPorEmpresa);
+          garantidoAceite = true;
+          garantidoAplicado = true;
+        }
+
+        if (afterHNT >= minimoGarantidoPorEmpresa) {
+          liqHNT = afterHNT;
+          descontoHNT = Math.max(0, brutoHNT - liqHNT);
+        } else {
+          liqHNT = minimoGarantidoPorEmpresa;
+          descontoHNT = Math.max(0, brutoHNT - minimoGarantidoPorEmpresa);
+          garantidoHNT = true;
+          garantidoAplicado = true;
+        }
       } else {
-        liqHNT = 45.00;
-        descontoHNT = Math.max(0, brutoHNT - 45.00);
-        garantidoAplicado = true;
+        liqAceite = afterAceite;
+        liqHNT = afterHNT;
+        descontoAceite = Math.max(0, brutoAceite - liqAceite);
+        descontoHNT = Math.max(0, brutoHNT - liqHNT);
       }
 
       brutoDia = brutoAceite + brutoHNT;
@@ -419,12 +439,23 @@ function App() {
       liquidoDia = brutoDia - descontoPadrao;
       descontoFinal = descontoPadrao;
 
-      if (nomeEmpresaLimpo === 'mama roma') {
+      if (!ehAvulso && nomeEmpresaLimpo === 'mama roma') {
         const ehAlmocoMeioSemana = ['Seg', 'Ter', 'Qua', 'Qui'].includes(diaSemana) && turno === 'Dia';
         if (!ehAlmocoMeioSemana && liquidoDia < 80.00) {
           liquidoDia = 80.00;
           garantidoAplicado = true;
           descontoFinal = Math.max(0, brutoDia - 80.00);
+        }
+      }
+
+      if (!ehAvulso && nomeEmpresaLimpo === 'hnt' && turno === 'Noite') {
+        const ehFimDeSemana = ['Sáb', 'Dom'].includes(diaSemana);
+        const minimoGarantido = ehFimDeSemana ? 100.00 : 80.00;
+
+        if (liquidoDia < minimoGarantido) {
+          liquidoDia = minimoGarantido;
+          garantidoAplicado = true;
+          descontoFinal = Math.max(0, brutoDia - minimoGarantido);
         }
       }
     }
@@ -440,19 +471,20 @@ function App() {
             desconto: descontoFinal,
             liquido: liquidoDia,
             taxaCobrada: porcentagem,
+            tipoAtendimento,
             garantido: garantidoAplicado,
             detalhe: {
               aceite: {
                 qtd: qtdAceite,
                 bruto: brutoAceite,
                 liquido: liqAceite,
-                garantido: liqAceite === 45.00
+                garantido: garantidoAceite
               },
               hnt: {
                 qtd: qtdHNT,
                 bruto: brutoHNT,
                 liquido: liqHNT,
-                garantido: liqHNT === 45.00
+                garantido: garantidoHNT
               }
             }
           }
@@ -466,6 +498,7 @@ function App() {
             desconto: descontoFinal,
             liquido: liquidoDia,
             taxaCobrada: porcentagem,
+            tipoAtendimento,
             garantido: garantidoAplicado
           };
 
@@ -487,6 +520,7 @@ function App() {
     setValorDiretoHNT('');
     setModoDireto(false);
     setUnidadeAceite('São Mateus');
+    setTipoAtendimento('Turno');
     console.debug('salvarDiaNaSemana: finalizado');
   };
 
@@ -500,7 +534,9 @@ function App() {
     semana.forEach((d) => {
       const indicadorEmpresa = obterIndicadorWhatsApp(d.empresa);
       const turnoLabel = d.textoTurno === 'Almoço' ? '☀️ Almoço' : (d.textoTurno === 'Jantar' ? '🌙 Jantar' : (d.textoTurno === 'Plantão' ? '🛌 Plantão' : d.textoTurno));
+      const tipoLabel = d.tipoAtendimento === 'Avulso' ? 'Avulso' : 'Turno';
       texto += `📅 *${d.diaSemana} (${turnoLabel})* — ${indicadorEmpresa}\n`;
+      texto += `• Tipo: ${tipoLabel}\n`;
       if (d.detalhe && d.detalhe.aceite) {
         texto += `• Aceite: ${d.detalhe.aceite.qtd} corr. — Bruto: R$ ${Number(d.detalhe.aceite.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.aceite.liquido || 0).toFixed(2)} ${d.detalhe.aceite.garantido ? '🔥 (Garantido)' : ''}\n`;
         texto += `• HNT: ${d.detalhe.hnt.qtd} corr. — Bruto: R$ ${Number(d.detalhe.hnt.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.hnt.liquido || 0).toFixed(2)} ${d.detalhe.hnt.garantido ? '🔥 (Garantido)' : ''}\n`;
@@ -614,27 +650,43 @@ function App() {
 
         <label>Selecione a Empresa:</label>
         <div className={`company-grid ${errosCampos?.empresaSelecionada ? 'error-border' : ''}`}>
-          <button type="button" className={`company-card ${empresaSelecionada === 'Mama Roma' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Mama Roma'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
+          <button type="button" className={`company-card ${empresaSelecionada === 'Mama Roma' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Mama Roma'); setEmpresaManual(''); setTipoAtendimento('Turno'); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
             <img src={logoMamaRoma} alt="Mama Roma" className="company-logo-img" />
             <span>Mama Roma</span>
           </button>
-          <button type="button" className={`company-card ${empresaSelecionada === 'Aceite' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Aceite'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
+          <button type="button" className={`company-card ${empresaSelecionada === 'Aceite' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Aceite'); setEmpresaManual(''); setTipoAtendimento('Turno'); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
             <img src={logoAceite} alt="Aceite" className="company-logo-img" />
             <span>Aceite</span>
           </button>
-          <button type="button" className={`company-card ${(empresaSelecionada === 'HNT' || (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte')) ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('HNT'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
+          <button type="button" className={`company-card ${(empresaSelecionada === 'HNT' || (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte')) ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('HNT'); setEmpresaManual(''); setTipoAtendimento('Turno'); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
             <img src={logoHNT} alt="HNT" className="company-logo-img" />
             <span>HNT</span>
           </button>
-          <button type="button" className={`company-card ${empresaSelecionada === 'Bents' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Bents'); setEmpresaManual(''); setErrosCampos(p => ({...p, empresaSelecionada: false})); setModoDireto(true); }}>
+          <button type="button" className={`company-card ${empresaSelecionada === 'Bents' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Bents'); setEmpresaManual(''); setTipoAtendimento('Turno'); setErrosCampos(p => ({...p, empresaSelecionada: false})); setModoDireto(true); }}>
             <img src={logoBents} alt="Bents" className="company-logo-img" />
             <span>Bents</span>
           </button>
-          <button type="button" className={`company-card ${empresaSelecionada === 'Outra' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Outra'); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
+          <button type="button" className={`company-card ${empresaSelecionada === 'Outra' ? 'active' : ''}`} onClick={() => { setEmpresaSelecionada('Outra'); setTipoAtendimento('Turno'); setErrosCampos(p => ({...p, empresaSelecionada: false})); }}>
             <img src={logoDefault} alt="Outra Empresa" className="company-logo-img" />
             <span>{empresaManual || 'Outra'}</span>
           </button>
         </div>
+
+        {empresaSelecionada && (
+          <div className="company-unit-box">
+            <label className="company-unit-label">🧾 Tipo de atendimento:</label>
+            <div className="company-grid">
+              <label className={`shift-chip ${tipoAtendimento === 'Turno' ? 'selected' : ''} company-unit-option`}>
+                <input className="hidden-input" type="radio" name="tipoAtendimento" value="Turno" checked={tipoAtendimento === 'Turno'} onChange={() => setTipoAtendimento('Turno')} />
+                Turno normal
+              </label>
+              <label className={`shift-chip ${tipoAtendimento === 'Avulso' ? 'selected' : ''} company-unit-option`}>
+                <input className="hidden-input" type="radio" name="tipoAtendimento" value="Avulso" checked={tipoAtendimento === 'Avulso'} onChange={() => setTipoAtendimento('Avulso')} />
+                Avulso
+              </label>
+            </div>
+          </div>
+        )}
 
         {empresaSelecionada === 'Aceite' && (
           <div className="company-unit-box">
@@ -858,7 +910,7 @@ function App() {
               title="Clique para excluir este dia"
             >
               <span className="history-item-title">
-                📅 {dia?.diaSemana || ''} ({dia?.textoTurno === 'Almoço' ? '☀️ Almoço' : (dia?.textoTurno === 'Jantar' ? '🌙 Jantar' : (dia?.textoTurno === 'Plantão' ? '🛌 Plantão' : dia?.textoTurno))}) — {dia?.empresa || ''}
+                📅 {dia?.diaSemana || ''} ({dia?.textoTurno === 'Almoço' ? '☀️ Almoço' : (dia?.textoTurno === 'Jantar' ? '🌙 Jantar' : (dia?.textoTurno === 'Plantão' ? '🛌 Plantão' : dia?.textoTurno))}) — {dia?.empresa || ''} {dia?.tipoAtendimento === 'Avulso' ? '• Avulso' : '• Turno'}
               </span>
               <div className="history-row">
                 {dia?.detalhe && dia.detalhe.aceite ? (
@@ -884,9 +936,11 @@ function App() {
                 )}
               </div>
               {dia?.detalhe && dia.detalhe.aceite ? (
-                <p className="history-note">
-                  * Detalhe por estabelecimento: Aceite {dia.detalhe.aceite.garantido ? '(Garantido)' : '(Líquido acima do mínimo)'} — HNT {dia.detalhe.hnt.garantido ? '(Garantido)' : '(Líquido acima do mínimo)'}.
-                </p>
+                dia?.tipoAtendimento === 'Avulso' ? null : (
+                  <p className="history-note">
+                    * Detalhe por estabelecimento: Aceite {(dia?.detalhe?.aceite?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')} — HNT {(dia?.detalhe?.hnt?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')}
+                  </p>
+                )
               ) : (
                 dia?.garantido && (
                   <p className="history-note">
