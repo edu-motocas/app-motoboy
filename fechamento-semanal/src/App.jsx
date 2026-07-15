@@ -91,7 +91,7 @@ const TABELA_ZONA_NORTE = {
   "Recanto da Mata": 20.00, "Distrito Industrial": 32.00, "Parque Independ.": 30.00, 
   "Santa Cruz": 25.00, "Barreira": 35.00, "Granjas Betânia": 17.00, 
   "Benfica": 28.00, "Náutico": 50.00, "Recanto dos Lagos": 20.00,
-  "Nova Benfica": 30.00, "Grama": 30.00, "BR": 1.20 
+  "Nova Benfica": 30.00, "Grama": 30.00, "BR": 1.20 , "Milho branco": 15.00, "Amazonas": 17.00
 };
 
 const DIAS_DA_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
@@ -127,6 +127,16 @@ function App() {
   const getTabelaAtiva = () => {
     const estaAceiteZonaNorte = empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte';
     return estaAceiteZonaNorte ? TABELA_ZONA_NORTE : TABELA_PRECOS;
+  };
+  const isZonaNorteSingleStoreMode = (dia, turnoVal) => {
+    if (!dia) return false;
+    if (['Sáb', 'Dom'].includes(dia)) return true;
+    if (dia === 'Sex' && turnoVal === 'Noite') return true;
+    return false;
+  };
+  const getZonaNorteMinimo = (dia, turnoVal) => {
+    if (isZonaNorteSingleStoreMode(dia, turnoVal)) return 100.00;
+    return (['Sáb', 'Dom'].includes(dia) ? 50.00 : 45.00);
   };
   const empresaFinal = empresaSelecionada === 'Outra' 
     ? (empresaManual || 'Outra Empresa') 
@@ -220,10 +230,21 @@ function App() {
     const emp = nomeEmpresa.trim().toLowerCase();
     if (emp === 'mama roma') return `🍝 *MAMA ROMA*`;
     if (emp === 'aceite') return `🥗 *ACEITE*`;
+    if (emp === 'aceite (zn)') return `🥗 *ACEITE (ZN)*`;
     if (emp === 'hnt') return `🍗 *HNT*`;
+    if (emp === 'hnt (zn)') return `🍗 *HNT (ZN)*`;
     if (emp === 'bents') return `🍔 *BENTS*`;
     if (emp.includes('aceite + hnt')) return `🥗🍗 *ACEITE + HNT (ZN)*`;
     return `🏢 *${nomeEmpresa.toUpperCase()}*`;
+  };
+
+  const formatEmpresaResumo = (dia) => {
+    if (!dia || !dia.empresa) return '';
+    const empresa = dia.empresa;
+    if ((empresa === 'Aceite' || empresa === 'HNT') && dia.detalhe) {
+      return `${empresa} (ZN)`;
+    }
+    return empresa;
   };
 
   const obterPrecoBairro = (bairro) => {
@@ -323,6 +344,9 @@ function App() {
           novosErros.listaEntregasDia = true;
           if (valorEntrega) novosErros.lembreteBotao = true; 
         }
+        if (isZonaNorteSingleStoreMode(diaSemana, turno) && !empresaCorridaZonaNorte) {
+          novosErros.empresaCorridaZonaNorte = true;
+        }
       }
     } else {
       if (modoDireto) {
@@ -386,36 +410,56 @@ function App() {
       }
 
       const taxa = porcentagem / 100;
-      const minimoGarantidoPorEmpresa = ['Sáb', 'Dom'].includes(diaSemana) ? 50.00 : 45.00;
+
+      const minimoGarantidoPorEmpresa = getZonaNorteMinimo(diaSemana, turno);
       garantidoAceite = false;
       garantidoHNT = false;
+
+      if (isZonaNorteSingleStoreMode(diaSemana, turno)) {
+        if (empresaCorridaZonaNorte === 'Aceite') {
+          qtdHNT = 0;
+          brutoHNT = 0;
+        } else {
+          qtdAceite = 0;
+          brutoAceite = 0;
+        }
+      }
 
       const afterAceite = brutoAceite * (1 - taxa);
       const afterHNT = brutoHNT * (1 - taxa);
 
       if (!ehAvulso) {
-        if (afterAceite >= minimoGarantidoPorEmpresa) {
-          liqAceite = afterAceite;
-          descontoAceite = Math.max(0, brutoAceite - liqAceite);
+        if (brutoAceite > 0) {
+          if (afterAceite >= minimoGarantidoPorEmpresa) {
+            liqAceite = afterAceite;
+            descontoAceite = Math.max(0, brutoAceite - liqAceite);
+          } else {
+            liqAceite = minimoGarantidoPorEmpresa;
+            descontoAceite = Math.max(0, brutoAceite - minimoGarantidoPorEmpresa);
+            garantidoAceite = true;
+            garantidoAplicado = true;
+          }
         } else {
-          liqAceite = minimoGarantidoPorEmpresa;
-          descontoAceite = Math.max(0, brutoAceite - minimoGarantidoPorEmpresa);
-          garantidoAceite = true;
-          garantidoAplicado = true;
+          liqAceite = 0;
+          descontoAceite = 0;
         }
-
-        if (afterHNT >= minimoGarantidoPorEmpresa) {
-          liqHNT = afterHNT;
-          descontoHNT = Math.max(0, brutoHNT - liqHNT);
+        if (brutoHNT > 0) {
+          if (afterHNT >= minimoGarantidoPorEmpresa) {
+            liqHNT = afterHNT;
+            descontoHNT = Math.max(0, brutoHNT - liqHNT);
+          } else {
+            liqHNT = minimoGarantidoPorEmpresa;
+            descontoHNT = Math.max(0, brutoHNT - minimoGarantidoPorEmpresa);
+            garantidoHNT = true;
+            garantidoAplicado = true;
+          }
         } else {
-          liqHNT = minimoGarantidoPorEmpresa;
-          descontoHNT = Math.max(0, brutoHNT - minimoGarantidoPorEmpresa);
-          garantidoHNT = true;
-          garantidoAplicado = true;
+          liqHNT = 0;
+          descontoHNT = 0;
         }
       } else {
-        liqAceite = afterAceite;
-        liqHNT = afterHNT;
+        liqAceite = brutoAceite > 0 ? afterAceite : 0;
+        liqHNT = brutoHNT > 0 ? afterHNT : 0;
         descontoAceite = Math.max(0, brutoAceite - liqAceite);
         descontoHNT = Math.max(0, brutoHNT - liqHNT);
       }
@@ -460,9 +504,13 @@ function App() {
       }
     }
 
+      const empresaParaSalvar = (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && isZonaNorteSingleStoreMode(diaSemana, turno))
+        ? empresaCorridaZonaNorte
+        : empresaFinal;
+
       const novoDia = empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte'
         ? {
-            empresa: empresaFinal,
+            empresa: empresaParaSalvar,
             diaSemana,
             turno,
             textoTurno: (turno === 'Dia' ? 'Almoço' : (turno === 'Noite' ? 'Jantar' : (turno === 'Plantao' ? 'Plantão' : ''))),
@@ -532,14 +580,19 @@ function App() {
     texto += `👤 *Motoboy:* ${nomeMotoboy.trim()}\n\n`;
     
     semana.forEach((d) => {
-      const indicadorEmpresa = obterIndicadorWhatsApp(d.empresa);
+      const empresaResumo = formatEmpresaResumo(d);
+      const indicadorEmpresa = obterIndicadorWhatsApp(empresaResumo);
       const turnoLabel = d.textoTurno === 'Almoço' ? '☀️ Almoço' : (d.textoTurno === 'Jantar' ? '🌙 Jantar' : (d.textoTurno === 'Plantão' ? '🛌 Plantão' : d.textoTurno));
       const tipoLabel = d.tipoAtendimento === 'Avulso' ? 'Avulso' : 'Turno';
       texto += `📅 *${d.diaSemana} (${turnoLabel})* — ${indicadorEmpresa}\n`;
       texto += `• Tipo: ${tipoLabel}\n`;
       if (d.detalhe && d.detalhe.aceite) {
-        texto += `• Aceite: ${d.detalhe.aceite.qtd} corr. — Bruto: R$ ${Number(d.detalhe.aceite.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.aceite.liquido || 0).toFixed(2)} ${d.detalhe.aceite.garantido ? '🔥 (Garantido)' : ''}\n`;
-        texto += `• HNT: ${d.detalhe.hnt.qtd} corr. — Bruto: R$ ${Number(d.detalhe.hnt.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.hnt.liquido || 0).toFixed(2)} ${d.detalhe.hnt.garantido ? '🔥 (Garantido)' : ''}\n`;
+        if ((d.detalhe.aceite.qtd || 0) > 0) {
+          texto += `• Aceite: ${d.detalhe.aceite.qtd} corr. — Bruto: R$ ${Number(d.detalhe.aceite.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.aceite.liquido || 0).toFixed(2)} ${d.detalhe.aceite.garantido ? '🔥 (Garantido)' : ''}\n`;
+        }
+        if ((d.detalhe.hnt.qtd || 0) > 0) {
+          texto += `• HNT: ${d.detalhe.hnt.qtd} corr. — Bruto: R$ ${Number(d.detalhe.hnt.bruto || 0).toFixed(2)} — Líq: R$ ${Number(d.detalhe.hnt.liquido || 0).toFixed(2)} ${d.detalhe.hnt.garantido ? '🔥 (Garantido)' : ''}\n`;
+        }
         texto += `• Taxa Retida: R$ ${(d.desconto || 0).toFixed(2)}\n`;
         texto += `• Valor Líquido: R$ ${(d.liquido || 0).toFixed(2)}\n\n`;
       } else {
@@ -704,6 +757,23 @@ function App() {
           </div>
         )}
 
+        {empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && isZonaNorteSingleStoreMode(diaSemana, turno) && (
+          <div className="company-unit-box">
+            <label className="company-unit-label">⚠️ Zona Norte (Modo único a partir de Sex Noite): escolha a loja do dia</label>
+            <div className="company-grid split-grid">
+              <label className={`shift-chip ${empresaCorridaZonaNorte === 'Aceite' ? 'selected' : ''} company-unit-option`}>
+                <input className="hidden-input" type="radio" name="empresaZonaNorteDia" checked={empresaCorridaZonaNorte === 'Aceite'} onChange={() => setEmpresaCorridaZonaNorte('Aceite')} />
+                🥗 Aceite
+              </label>
+              <label className={`shift-chip ${empresaCorridaZonaNorte === 'HNT' ? 'selected' : ''} company-unit-option`}>
+                <input className="hidden-input" type="radio" name="empresaZonaNorteDia" checked={empresaCorridaZonaNorte === 'HNT'} onChange={() => setEmpresaCorridaZonaNorte('HNT')} />
+                🍗 HNT
+              </label>
+            </div>
+            <p className="info-text">A partir desta data/turno não é possível cobrir as duas lojas. O garantido aplicado para cada boy será R$100,00 (quando aplicável).</p>
+          </div>
+        )}
+
         {empresaSelecionada === 'Outra' && (
           <input 
             type="text" 
@@ -838,7 +908,7 @@ function App() {
               </div>
             )}
 
-            {empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && (
+            {empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && !isZonaNorteSingleStoreMode(diaSemana, turno) && (
               <div className="subsection-divider">
                 <label className="subsection-label">Vincular esta corrida para:</label>
                 <div className="company-grid split-grid">
@@ -910,17 +980,17 @@ function App() {
               title="Clique para excluir este dia"
             >
               <span className="history-item-title">
-                📅 {dia?.diaSemana || ''} ({dia?.textoTurno === 'Almoço' ? '☀️ Almoço' : (dia?.textoTurno === 'Jantar' ? '🌙 Jantar' : (dia?.textoTurno === 'Plantão' ? '🛌 Plantão' : dia?.textoTurno))}) — {dia?.empresa || ''} {dia?.tipoAtendimento === 'Avulso' ? '• Avulso' : '• Turno'}
+                📅 {dia?.diaSemana || ''} ({dia?.textoTurno === 'Almoço' ? '☀️ Almoço' : (dia?.textoTurno === 'Jantar' ? '🌙 Jantar' : (dia?.textoTurno === 'Plantão' ? '🛌 Plantão' : dia?.textoTurno))}) — {formatEmpresaResumo(dia)} {dia?.tipoAtendimento === 'Avulso' ? '• Avulso' : '• Turno'}
               </span>
               <div className="history-row">
                 {dia?.detalhe && dia.detalhe.aceite ? (
                   <>
-                    <span>
-                      🥗 Aceite: {dia.detalhe.aceite.qtd || 0} corr. — Líq: R$ {(dia.detalhe.aceite.liquido || 0).toFixed(2)} {dia.detalhe.aceite.garantido ? '🔥' : ''}
-                    </span>
-                    <span>
-                      🍗 HNT: {dia.detalhe.hnt.qtd || 0} corr. — Líq: R$ {(dia.detalhe.hnt.liquido || 0).toFixed(2)} {dia.detalhe.hnt.garantido ? '🔥' : ''}
-                    </span>
+                    {dia.detalhe.aceite.qtd > 0 && (
+                      <span className="history-highlight">🥗 Aceite: {dia.detalhe.aceite.qtd} corr. — Líq: R$ {(dia.detalhe.aceite.liquido || 0).toFixed(2)} {dia.detalhe.aceite.garantido ? '🔥' : ''}</span>
+                    )}
+                    {dia.detalhe.hnt.qtd > 0 && (
+                      <span className="history-highlight">🍗 HNT: {dia.detalhe.hnt.qtd} corr. — Líq: R$ {(dia.detalhe.hnt.liquido || 0).toFixed(2)} {dia.detalhe.hnt.garantido ? '🔥' : ''}</span>
+                    )}
                     <span>Bruto: R$ {(dia?.bruto || 0).toFixed(2)}</span>
                     <span>Taxa: R$ {(dia?.desconto || 0).toFixed(2)}</span>
                   </>
@@ -937,9 +1007,19 @@ function App() {
               </div>
               {dia?.detalhe && dia.detalhe.aceite ? (
                 dia?.tipoAtendimento === 'Avulso' ? null : (
-                  <p className="history-note">
-                    * Detalhe por estabelecimento: Aceite {(dia?.detalhe?.aceite?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')} — HNT {(dia?.detalhe?.hnt?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')}
-                  </p>
+                  dia?.empresa === 'Aceite' ? (
+                    <p className="history-note">
+                      * Detalhe por estabelecimento: Aceite {(dia?.detalhe?.aceite?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')}
+                    </p>
+                  ) : dia?.empresa === 'HNT' ? (
+                    <p className="history-note">
+                      * Detalhe por estabelecimento: HNT {(dia?.detalhe?.hnt?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')}
+                    </p>
+                  ) : (
+                    <p className="history-note">
+                      * Detalhe por estabelecimento: Aceite {(dia?.detalhe?.aceite?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')} — HNT {(dia?.detalhe?.hnt?.garantido ? 'Valor mínimo garantido aplicado para este período/empresa.' : 'Liquido acima do mínimo garantido.')}
+                    </p>
+                  )
                 )
               ) : (
                 dia?.garantido && (
