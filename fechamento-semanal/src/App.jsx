@@ -134,8 +134,15 @@ function App() {
     if (dia === 'Sex' && turnoVal === 'Noite') return true;
     return false;
   };
-  const getZonaNorteMinimo = (dia, turnoVal) => {
+  const isZonaNorteDaytimeGuaranteeAceiteOnly = (dia, turnoVal) => {
+    if (!dia) return false;
+    if (['Sáb', 'Dom'].includes(dia)) return false;
+    if (turnoVal !== 'Dia') return false;
+    return !isZonaNorteSingleStoreMode(dia, turnoVal);
+  };
+  const getZonaNorteMinimo = (empresa, dia, turnoVal) => {
     if (isZonaNorteSingleStoreMode(dia, turnoVal)) return 100.00;
+    if (empresa === 'Aceite' && isZonaNorteDaytimeGuaranteeAceiteOnly(dia, turnoVal)) return 85.00;
     return (['Sáb', 'Dom'].includes(dia) ? 50.00 : 45.00);
   };
   const empresaFinal = empresaSelecionada === 'Outra' 
@@ -411,7 +418,9 @@ function App() {
 
       const taxa = porcentagem / 100;
 
-      const minimoGarantidoPorEmpresa = getZonaNorteMinimo(diaSemana, turno);
+      const minimoGarantidoAceite = getZonaNorteMinimo('Aceite', diaSemana, turno);
+      const minimoGarantidoHNT = getZonaNorteMinimo('HNT', diaSemana, turno);
+      const garantidoHNTNaoAplicaNoDia = isZonaNorteDaytimeGuaranteeAceiteOnly(diaSemana, turno);
       garantidoAceite = false;
       garantidoHNT = false;
 
@@ -430,12 +439,12 @@ function App() {
 
       if (!ehAvulso) {
         if (brutoAceite > 0) {
-          if (afterAceite >= minimoGarantidoPorEmpresa) {
+          if (afterAceite >= minimoGarantidoAceite) {
             liqAceite = afterAceite;
             descontoAceite = Math.max(0, brutoAceite - liqAceite);
           } else {
-            liqAceite = minimoGarantidoPorEmpresa;
-            descontoAceite = Math.max(0, brutoAceite - minimoGarantidoPorEmpresa);
+            liqAceite = minimoGarantidoAceite;
+            descontoAceite = Math.max(0, brutoAceite - minimoGarantidoAceite);
             garantidoAceite = true;
             garantidoAplicado = true;
           }
@@ -444,12 +453,15 @@ function App() {
           descontoAceite = 0;
         }
         if (brutoHNT > 0) {
-          if (afterHNT >= minimoGarantidoPorEmpresa) {
+          if (garantidoHNTNaoAplicaNoDia) {
+            liqHNT = afterHNT;
+            descontoHNT = Math.max(0, brutoHNT - liqHNT);
+          } else if (afterHNT >= minimoGarantidoHNT) {
             liqHNT = afterHNT;
             descontoHNT = Math.max(0, brutoHNT - liqHNT);
           } else {
-            liqHNT = minimoGarantidoPorEmpresa;
-            descontoHNT = Math.max(0, brutoHNT - minimoGarantidoPorEmpresa);
+            liqHNT = minimoGarantidoHNT;
+            descontoHNT = Math.max(0, brutoHNT - minimoGarantidoHNT);
             garantidoHNT = true;
             garantidoAplicado = true;
           }
@@ -485,10 +497,11 @@ function App() {
 
       if (!ehAvulso && nomeEmpresaLimpo === 'mama roma') {
         const ehAlmocoMeioSemana = ['Seg', 'Ter', 'Qua', 'Qui'].includes(diaSemana) && turno === 'Dia';
-        if (!ehAlmocoMeioSemana && liquidoDia < 80.00) {
-          liquidoDia = 80.00;
+        const minimoGarantidoMamaRoma = diaSemana === 'Dom' ? 160.00 : 80.00;
+        if (!ehAlmocoMeioSemana && liquidoDia < minimoGarantidoMamaRoma) {
+          liquidoDia = minimoGarantidoMamaRoma;
           garantidoAplicado = true;
-          descontoFinal = Math.max(0, brutoDia - 80.00);
+          descontoFinal = Math.max(0, brutoDia - minimoGarantidoMamaRoma);
         }
       }
 
