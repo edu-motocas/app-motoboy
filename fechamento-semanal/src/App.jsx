@@ -91,7 +91,9 @@ const TABELA_ZONA_NORTE = {
   "Recanto da Mata": 20.00, "Distrito Industrial": 32.00, "Parque Independ.": 30.00, 
   "Santa Cruz": 25.00, "Barreira": 35.00, "Granjas Betânia": 17.00, 
   "Benfica": 28.00, "Náutico": 50.00, "Recanto dos Lagos": 20.00,
-  "Nova Benfica": 30.00, "Grama": 30.00, "BR": 1.20 , "Milho branco": 15.00, "Amazonas": 17.00
+  "Nova Benfica": 30.00, "Grama": 30.00, "BR": 1.20 , "Milho branco": 15.00, "Amazonas": 17.00,
+  "Jardim Natal": 15.00, "Jóquei Clube 1": 15.00, "Jóquei Clube 2": 18.00, "Francisco Bernardino ": 10.00,
+  "Fontes Ville 1": 15.00, "Fontes Ville 2": 17.00, "São Judas Tadeu ": 28.00, "Encosta do Sol": 13.00,
 };
 
 const DIAS_DA_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
@@ -497,7 +499,7 @@ function App() {
 
       if (!ehAvulso && nomeEmpresaLimpo === 'mama roma') {
         const ehAlmocoMeioSemana = ['Seg', 'Ter', 'Qua', 'Qui'].includes(diaSemana) && turno === 'Dia';
-        const minimoGarantidoMamaRoma = diaSemana === 'Dom' ? 160.00 : 80.00;
+        const minimoGarantidoMamaRoma = diaSemana === 'Dom' ? 150.00 : 80.00;
         if (!ehAlmocoMeioSemana && liquidoDia < minimoGarantidoMamaRoma) {
           liquidoDia = minimoGarantidoMamaRoma;
           garantidoAplicado = true;
