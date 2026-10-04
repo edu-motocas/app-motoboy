@@ -136,16 +136,10 @@ function App() {
     if (dia === 'Sex' && turnoVal === 'Noite') return true;
     return false;
   };
-  const isZonaNorteDaytimeGuaranteeAceiteOnly = (dia, turnoVal) => {
-    if (!dia) return false;
-    if (['Sáb', 'Dom'].includes(dia)) return false;
-    if (turnoVal !== 'Dia') return false;
-    return !isZonaNorteSingleStoreMode(dia, turnoVal);
-  };
   const getZonaNorteMinimo = (empresa, dia, turnoVal) => {
     if (isZonaNorteSingleStoreMode(dia, turnoVal)) return 100.00;
-    if (empresa === 'Aceite' && isZonaNorteDaytimeGuaranteeAceiteOnly(dia, turnoVal)) return 85.00;
-    return (['Sáb', 'Dom'].includes(dia) ? 50.00 : 45.00);
+    if (empresa === 'Aceite') return 90.00;
+    return null;
   };
   const empresaFinal = empresaSelecionada === 'Outra' 
     ? (empresaManual || 'Outra Empresa') 
@@ -388,9 +382,11 @@ function App() {
 
     if (empresaSelecionada === 'Bents') {
       qtdEntregas = parseInt(qtdDireto) || 0;
-      brutoDia = ehAvulso ? (qtdEntregas * 8.00) : (60.00 + (qtdEntregas * 8.00));
-      const descontoPadrao = brutoDia * (porcentagem / 100);
-      liquidoDia = brutoDia - descontoPadrao;
+      const valorCorridas = qtdEntregas * 7.50;
+      const descontoPadrao = valorCorridas * (porcentagem / 100);
+      const corridasLiquidas = valorCorridas - descontoPadrao;
+      brutoDia = ehAvulso ? valorCorridas : (40.00 + valorCorridas);
+      liquidoDia = ehAvulso ? corridasLiquidas : (corridasLiquidas + 40.00);
       descontoFinal = descontoPadrao;
       
       if (!ehAvulso) {
@@ -422,7 +418,6 @@ function App() {
 
       const minimoGarantidoAceite = getZonaNorteMinimo('Aceite', diaSemana, turno);
       const minimoGarantidoHNT = getZonaNorteMinimo('HNT', diaSemana, turno);
-      const garantidoHNTNaoAplicaNoDia = isZonaNorteDaytimeGuaranteeAceiteOnly(diaSemana, turno);
       garantidoAceite = false;
       garantidoHNT = false;
 
@@ -455,7 +450,7 @@ function App() {
           descontoAceite = 0;
         }
         if (brutoHNT > 0) {
-          if (garantidoHNTNaoAplicaNoDia) {
+          if (minimoGarantidoHNT === null) {
             liqHNT = afterHNT;
             descontoHNT = Math.max(0, brutoHNT - liqHNT);
           } else if (afterHNT >= minimoGarantidoHNT) {
@@ -856,7 +851,7 @@ function App() {
               className={`input-field ${errosCampos?.qtdDireto ? 'error' : ''} spaced-input`} 
             />
             <div className="info-text">
-              <b>Fixo Diário:</b> R$ 60.00 | <b>Valor por Corrida:</b> R$ 8.00
+              <b>Fixo Diário:</b> R$ 40.00 | <b>Valor por Corrida:</b> R$ 7.50
             </div>
           </div>
         ) : empresaSelecionada && (empresaSelecionada === 'Aceite' && unidadeAceite === 'Zona Norte' && modoDireto) ? (
