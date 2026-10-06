@@ -138,7 +138,7 @@ function App() {
   };
   const getZonaNorteMinimo = (empresa, dia, turnoVal) => {
     if (isZonaNorteSingleStoreMode(dia, turnoVal)) return 100.00;
-    if (empresa === 'Aceite') return 90.00;
+    if (empresa === 'Aceite') return 85.00;
     return null;
   };
   const empresaFinal = empresaSelecionada === 'Outra' 
